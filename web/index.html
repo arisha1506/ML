@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="ru">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сколько стоит минута дороги</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+
+
+<div class="app">
+  <aside class="panel">
+    <div class="ptop">
+    <h1>Карта Москвы, которая переводит дорогу на работу в рубли</h1>
+    <p class="lede">Укажите, где вы работаете, и карта пересчитает время до вашего офиса из каждой точки города.</p>
+
+    <p class="keyfig"><span class="kf">146&nbsp;000&nbsp;₽</span> снимает рынок с цены квартиры за каждую минуту дороги, хотя сама минута стоит <b style="white-space:nowrap">9–30 тысяч</b>.</p>
+
+    <div class="sep"></div>
+
+    <div class="io">
+      <div class="iorow">
+        <span class="iodot from"></span>
+        <label for="qfrom" class="vh">Откуда</label>
+        <input id="qfrom" type="search" autocomplete="off" placeholder="Откуда: адрес, станция или район"
+          role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="qfromres">
+        <button type="button" class="ioclear" data-for="qfrom" aria-label="Очистить" hidden>×</button>
+        <div class="sres" id="qfromres" role="listbox" hidden></div>
+      </div>
+      <div class="iorow">
+        <span class="iodot to"></span>
+        <label for="qto" class="vh">Куда</label>
+        <input id="qto" type="search" autocomplete="off" placeholder="Куда: адрес работы или бизнес-центр"
+          role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="qtores">
+        <button type="button" class="ioclear" data-for="qto" aria-label="Очистить" hidden>×</button>
+        <div class="sres" id="qtores" role="listbox" hidden></div>
+      </div>
+      <p class="note" id="whint" hidden></p>
+    </div>
+    </div>
+
+    <div class="sep"></div>
+
+    <div id="cellcard" class="pcard" hidden></div>
+
+    <h2 class="yhead">Подробный маршрут</h2>
+    <div id="cellroute"><p class="muted">Нажмите любую ячейку на карте или найдите адрес — разберу дорогу на работу по шагам: пешком до станции, какая линия, сколько остановок.</p></div>
+
+    <div class="sep"></div>
+
+    <h2>Ваша квартира и дорога<span class="mltag">ML</span></h2>
+    <div class="calc est">
+      <div class="row">площадь <input type="number" id="e-area" aria-label="площадь, м²" inputmode="numeric" value="58" min="15" max="300" step="1"> м²</div>
+      <div class="row">комнат <input type="number" id="e-rooms" aria-label="комнат" inputmode="numeric" value="2" min="0" max="7" step="1"></div>
+      <div class="row">этаж <input type="number" id="e-floor" aria-label="этаж" inputmode="numeric" value="7" min="1" max="60" step="1"> из <input type="number" id="e-floors" aria-label="этажей в доме" inputmode="numeric" value="16" min="1" max="60" step="1"></div>
+      <div class="row">дом построен в <input type="number" id="e-year" aria-label="год постройки" inputmode="numeric" value="2008" min="1900" max="2026" step="1"></div>
+      <div class="row">зарплата <input type="number" id="c-wage" aria-label="зарплата, тыс ₽ в месяц" inputmode="numeric" value="110" min="30" max="1000" step="5"> тыс ₽ в месяц</div>
+      <div id="e-out" class="muted">Выберите ячейку на карте или найдите адрес.</div>
+      <div id="c-out" class="muted" style="margin-top:14px"></div>
+    </div>
+
+    <div class="sep"></div>
+
+    <details class="howto">
+      <summary>Как читать карту</summary>
+      <p>Шестиугольник — ячейка площадью 0,74 км². Цвет показывает выбранную величину, от светлого к тёмно-красному: по умолчанию это время до работы.</p>
+      <p>Нажмите на ячейку, и откроется карточка с районом, временем, ценой метра и объявлениями, а слева появится дорога на работу по шагам. Синие лучи от ячейки ведут к офисам, куда ездят её жители: чем толще луч, тем больше их туда едет.</p>
+      <p>Синие кружки — 195 центров занятости, размер по числу рабочих мест. Цветные линии — метро, МЦК и МЦД в своих настоящих цветах, МЦД пунктиром.</p>
+      <p>Серые окружности — кольца 5, 10, 15, 20 и 30 км от центра, лучи между ними — границы восьми секторов. Вместе они делят город на 40 зон.</p>
+      <p>Выключите карту города, и останется одна заливка данными, без парков и дорог. Так лучше видно сами цифры.</p>
+      <p>Фиолетовые точки — строящиеся и проектируемые станции метро по планам мэрии до 2030 года. Их положение взято из названий районов и улиц, а не из точных проектов, поэтому оно приблизительное, до ячейки. «Перспектива» в карточке — на сколько процентов модель поднимает цену, если подставить ей новое расстояние до метро при прочих равных. Это не прогноз цен после открытия, а мера того, сколько рынок платит за близость к станции сегодня.</p>
+      <p>Пометка ML стоит у величин, которые посчитала обученная модель, а не формула. «Дешевле предсказанного» — разница между ценой объявления и той, что модель считает нормальной для такой квартиры в таком месте: плюс значит дешевле, минус дороже. «Тип района» — разбиение города методом k-средних по доступности и среде, цена в признаки не входила.</p>
+    </details>
+  </aside>
+
+  <div class="mapbox" id="mapbox">
+    <canvas id="map" role="img" aria-label="Карта Москвы, разбитая на шестиугольники: цвет показывает выбранную величину. Найти место можно через поля «Откуда» и «Куда»."></canvas>
+    <div class="loading" id="loading"><i></i>Загружаю карту…</div>
+    <div class="msheet" id="msheet" aria-live="polite"></div>
+    <div class="tip" id="tip" hidden></div>
+    <div class="hintbar" id="hintbar">
+      <span>Нажмите на шестиугольник: район, время до работы, цена метра и дорога по шагам</span>
+      <button type="button" id="hintclose" aria-label="Скрыть подсказку">×</button>
+    </div>
+
+    <div class="maptools">
+    <details class="layers">
+      <summary><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2 1.5 5.5 8 9l6.5-3.5z"/><path d="m1.5 8.5 6.5 3.5 6.5-3.5"/><path d="m1.5 11.5 6.5 3.5 6.5-3.5"/></svg>Слои карты</summary>
+      <div class="lbody">
+      <label><input type="checkbox" id="L-base" checked> <span class="sw" style="--c:#8CC96A"></span>карту города с парками и водой</label>
+      <label><input type="checkbox" id="L-hex" checked> <span class="sw" style="--c:linear-gradient(90deg,#F3C178,#B5422F)"></span>раскраску ячеек по данным</label>
+      <label><input type="checkbox" id="L-grid" checked> <span class="sw line" style="--c:#9E9E9E"></span>кольца и сектора города</label>
+      <label><input type="checkbox" id="L-lines" checked> <span class="sw line" style="--c:#D4222A"></span>линии метро, МЦК и МЦД</label>
+      <label><input type="checkbox" id="L-st"> <span class="sw dot" style="--c:#1A1A1A"></span>станции</label>
+      <label><input type="checkbox" id="L-jobs" checked> <span class="sw dot" style="--c:#2D6BE0"></span>195 мест работы: бизнес-центры</label>
+      <label hidden><input type="checkbox" id="L-shop"> <span class="sw dot"></span>торговля</label>
+      <label><input type="checkbox" id="L-nb"> <span class="sw dot" style="--c:#8A2D8F"></span>новые ЖК с ценой метра</label>
+      <label id="L-future-row" hidden style="display:none"><input type="checkbox" id="L-future"> <span class="sw dot" style="--c:#7D3CB5"></span>строящиеся станции метро</label>
+      </div>
+    </details>
+    <button type="button" class="pickbtn" id="pickbtn" aria-expanded="false" aria-controls="pickpanel">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 4h7M12 4h2M2 12h3M8 12h6"/><circle cx="10.5" cy="4" r="1.6"/><circle cx="6.5" cy="12" r="1.6"/></svg>
+      <span class="pbl">Подобрать район</span><span class="pbs">Подбор</span><b class="pickcount" id="pickcount" hidden></b>
+    </button>
+    </div>
+
+    <section class="pickpanel" id="pickpanel" role="dialog" aria-labelledby="pickh" hidden>
+      <div class="phead">
+        <h3 id="pickh">Подбор района</h3>
+        <button type="button" class="pclose" id="pclose" aria-label="Закрыть подбор">×</button>
+      </div>
+      <p class="plede">Где квартира вместе с дорогой на работу обойдётся дешевле всего</p>
+      <div class="pfields">
+        <label class="pf"><span class="pl">Бюджет до</span>
+          <span class="pin"><input type="number" id="f-budget" inputmode="numeric" value="20" min="3" max="500" step="1"><i>млн ₽</i></span></label>
+        <label class="pf"><span class="pl">Площадь от</span>
+          <span class="pin"><input type="number" id="f-area" inputmode="numeric" value="50" min="15" max="300" step="1"><i>м²</i></span></label>
+      </div>
+      <div class="pf"><span class="pl" id="ptl">В дороге не дольше</span>
+        <div class="pchips" role="radiogroup" aria-labelledby="ptl">
+          <button type="button" role="radio" data-t="30">30 мин</button>
+          <button type="button" role="radio" data-t="45">45 мин</button>
+          <button type="button" role="radio" data-t="60">60 мин</button>
+          <button type="button" role="radio" data-t="90">90 мин</button>
+        </div>
+        <input type="hidden" id="f-time" value="45">
+      </div>
+      <div class="pres" id="f-out" aria-live="polite"></div>
+      <div class="pfoot">
+        <button type="button" class="fclear" id="f-clear">Сбросить</button>
+        <details class="phow" id="phow"><summary>Как считаем</summary>
+          <button type="button" class="phowx" aria-label="Закрыть пояснение">×</button>
+          <p>Полная стоимость = квартира по цене метра в ячейке + дорога за восемь лет. Дорога переведена в деньги так же, как в блоке «Ваша квартира и дорога»: 40% часовой ставки от вашей зарплаты, две поездки в день, 250 рабочих дней, ставка 13% годовых. Если объявлений в ячейке нет, цену метра даёт модель.</p>
+        </details>
+      </div>
+    </section>
+
+    <div class="mapui">
+      <button class="reset" id="reset" type="button">Весь город</button>
+      <div class="zoomcol">
+        <button type="button" id="zin" aria-label="Приблизить">+</button>
+        <button type="button" id="zout" aria-label="Отдалить">−</button>
+      </div>
+    </div>
+
+    <div class="maplegend">
+      <div class="lab">чем раскрасить ячейки</div>
+      <div class="dd">
+        <button class="ddbtn" id="ddbtn" type="button" aria-haspopup="listbox" aria-expanded="false">
+          <span id="ddlabel">время до работы, мин</span>
+          <span class="chev"></span>
+        </button>
+        <div class="ddmenu" id="ddmenu" role="listbox" hidden></div>
+        <select id="colorby" aria-hidden="true" tabindex="-1">
+          <option value="t">время до работы, мин</option>
+          <option value="pm">цена метра по объявлениям, тыс ₽</option>
+          <option value="pmp">предсказанная цена метра, тыс ₽</option>
+          <option value="fg" hidden>перспектива: прирост от новой станции, %</option>
+          <option value="bn">насколько дешевле предсказанного, %</option>
+          <option value="tp">тип района</option>
+          <option value="dm">до метро, м</option>
+          <option value="n">объявлений в ячейке</option>
+          <option value="h">жилой фонд, тыс м²</option>
+          <option value="off">время до вашей работы</option>
+        </select>
+      </div>
+      <div class="legendbar" id="legendbar" style="background:linear-gradient(90deg,var(--hex-lo),var(--hex-mid),var(--hex-hi))"></div>
+      <div class="ticks"><span id="tk0"></span><span id="tk1"></span><span id="tk2"></span></div>
+      <div class="ticks" id="legendtypes" style="display:none;flex-wrap:wrap;gap:6px 14px"></div>
+      <div class="zoomhint"></div>
+    </div>
+  </div>
+</div>
+
+<div class="below">
+  <p class="bhead">Как это посчитано</p>
+  <p class="bsubhead">Данные, маршруты и модели, на которых держится карта</p>
+  <div class="method">
+    <div><h3>Сетка</h3><p><span class="num" id="n-cells">4 039</span> шестиугольников H3 по 0,74 км² в круге 30 км от Красной площади. Круг выходит за МКАД и захватывает ближнюю область.</p></div>
+    <div><h3>Время в пути</h3><p>Пешая сеть OpenStreetMap, метро, МЦК, МЦД, электрички и наземный транспорт по расписаниям. Кратчайший путь от 195 центров занятости до каждой ячейки, 771 922 пары.</p></div>
+    <div><h3>Выбор места работы</h3><p>Вероятность пропорциональна числу рабочих мест и exp(−βt), <span class="num" id="n-beta">β</span>. Настроена так, чтобы средняя поездка равнялась <span class="num" id="n-target">54</span> минутам.</p></div>
+    <div><h3>Цена и выгода<span class="mltag">ML</span></h3><p>Градиентный бустинг предсказывает цену по характеристикам квартиры и доступности: R² 0,904, средняя ошибка 16 процентов. Обучение и проверка разнесены по ячейкам города, иначе квартиры одного дома попадают и в обучение, и в проверку, и качество оказывается завышенным.</p></div>
+    <div><h3>Типы районов<span class="mltag">ML</span></h3><p>Ячейки разбиты методом k-средних по доступности и среде, цена в признаки не входила. Силуэт 0,16: город — непрерывный градиент, а не набор отдельных типов.</p></div>
+    <div><h3>Цена там, где объявлений нет<span class="mltag">ML</span></h3><p>Объявления есть в 1 467 ячейках из 4 039, а цена по ним честно считается в 777. Остальные три четверти карты закрывает модель: она предсказывает, сколько стоил бы метр одной и той же стандартной квартиры — 57 м², 2 комнаты, 7 этаж из 16 — в каждой ячейке. Там, где объявления есть, предсказание расходится с их медианой на 14 процентов.</p></div>
+    <div><h3>Оценка квартиры<span class="mltag">ML</span></h3><p>Цена разложена на эффект места и эффект самой квартиры: log цены равен эффекту ячейки плюс вклад площади, этажа, возраста и потолков. Вклад квартиры оценён регрессией с фиксированными эффектами ячеек, эффект места взят из предсказания для стандартной квартиры. На отложенных ячейках средняя ошибка 21,8 процента против 16,3 у полного бустинга — такова плата за формулу, которая помещается в страницу и считает цену прямо в браузере.</p></div>
+    <div><h3>Перспектива<span class="mltag">ML</span></h3><p>22 строящиеся и проектируемые станции метро по планам мэрии до 2030 года. Для 711 ячеек новая станция окажется ближе нынешней; у них модель при прочих равных даёт в среднем плюс 5,7 процента к цене, максимум 40. Положение станций приблизительное, до ячейки: точных координат в открытых данных OpenStreetMap ещё нет, поэтому они привязаны по районам и улицам из сообщений мэрии. Пять станций Троицкой линии в Новой Москве за пределы круга 30 км не попали.</p></div>
+    <div><h3>Срок в продаже<span class="mltag">ML</span></h3><p>У 5 251 объявления известна дата публикации. Медиана — 29 дней на витрине, четверть висит дольше 90. Чем сильнее цена ниже предсказанной, тем дольше объявление стоит: у самых дешёвых относительно модели медиана 47 дней против 26 у тех, кто просит на 5–20 процентов дороже. Это срез, а не история продаж: выгодные квартиры уходят быстро и из выдачи пропадают, поэтому среди дешёвых остаются те, у кого есть причина не продаваться.</p></div>
+    <div><h3>Сегменты предложения<span class="mltag">ML</span></h3><p>Объявления разбиты на пять типов по признакам квартиры и окружения, цена в признаки не входила: панель и кирпич советских лет, новые высотки, крупные квартиры нулевых, массовая застройка нулевых, жильё далеко от метро. Цена метра между крайними сегментами отличается в 2,4 раза — от 215 до 507 тысяч. Силуэт 0,15: это разметка непрерывного рынка, а не найденные границы.</p></div>
+    <div><h3>Похожие районы<span class="mltag">ML</span></h3><p>Для 2 051 ячейки подобраны похожие по доступности и среде, но с более дешёвым метром. Близость считается косинусной мерой по времени до работы, доступности рабочих мест, метро, магазинам, паркам и промзонам. Цена в признаки не входит, иначе подбор сводился бы к «просто дешевле».</p></div>
+    <div><h3>Новые ЖК</h3><p>1 985 жилых комплексов в 30 км по Яндекс.Недвижимости, у 1 037 есть цена метра. Метр в новом ЖК в среднем на 35 процентов дороже, чем модель даёт вторичке в той же ячейке: комфорт +19, бизнес +57, элит +83. Это перепродажа в новых домах, а не цены застройщика.</p></div>
+    <div><h3>Объявления</h3><p>5 371 предложение о продаже вторичного жилья, 1 467 ячеек. Цена метра и выгода показаны только там, где объявлений хотя бы три.</p></div>
+  </div>
+
+  <p class="bhead sechead">Источники</p>
+  <p class="bsubhead">Откуда взяты цифры и допущения</p>
+  <div class="sources">
+    <div>
+      <h3>Данные</h3>
+      <p><a href="https://realty.yandex.ru/">Яндекс.Недвижимость</a> — объявления</p>
+      <p><a href="https://www.openstreetmap.org/">OpenStreetMap</a> — здания, станции, парки, промзоны</p>
+      <p><a href="https://database.mobilitydata.org/">Mobility Database</a> — GTFS Мосгортранса</p>
+      <p><a href="https://rasp.yandex.ru/">Яндекс.Расписания</a> — интервалы метро и электричек</p>
+    </div>
+    <div>
+      <h3>Калибровка</h3>
+      <p><a href="https://www.rbc.ru/rbcfreenews/5f8dea529a7947c737397867">SuperJob через РБК</a> — 63 минуты на общественном транспорте</p>
+      <p><a href="https://tass.ru/obschestvo/27546319">Московский метрополитен и ON Медиа</a> — 24 минуты в салоне</p>
+    </div>
+    <div>
+      <h3>Методика</h3>
+      <p>Веса дискомфорта — метаанализ Abrantes и Wardman, 2011</p>
+      <p>Модель выбора — мультиномиальный логит Макфаддена</p>
+      <p>Равновесие — модель Алонсо, Мута и Миллса</p>
+    </div>
+  </div>
+</div>
+
+<script src="../code/data.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="../code/app.js"></script>
