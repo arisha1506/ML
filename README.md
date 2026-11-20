@@ -45,22 +45,3 @@ ml/     машинное обучение: скрипты на Python, дата�
 | `ml10_otsenka_kvartiry.py` | формула оценки квартиры для сайта |
 | `ml11_ekspozitsiya.py` | срок в продаже и отклонение цены от модели |
 | `ml12_segmenty.py` | сегменты предложения (кластеризация объявлений) |
-
-### Как запустить
-
-Нужны Python 3 и библиотеки pandas, numpy, matplotlib, scikit-learn, statsmodels (для скриптов с parquet ещё pyarrow).
-
-```
-cd ml
-python ml1_analiz_dannyh.py
-python ml2_regressiya.py
-python ml3_klassifikatsiya.py
-python ml4_anomalii.py
-python ml5_klasterizatsiya.py
-python ml6_rekomendatsii.py
-python ml12_segmenty.py
-```
-
-Эти скрипты читают только `moscow_housing_accessibility.csv` из папки `ml/`.
-
-Скрипты `build_dataset.py`, `ml7_karta_tsen.py`, `ml8_pohozhie.py`, `ml10_otsenka_kvartiry.py` и `ml11_ekspozitsiya.py` читают промежуточные файлы транспортной части проекта (parquet с доступностью, ячейками и жилым фондом, сырую выгрузку объявлений). Их в репозитории нет, а пути в скриптах указывают на папку `/home/claude/v2run`. Для запуска замените `PROJECT`, `RAW` и пути к parquet на свои.
